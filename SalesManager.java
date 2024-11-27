@@ -41,7 +41,7 @@ class SalesManager {
                         .sum();
     }
 
-    // Export sales data to console (simple CSV format for now)
+    // Export sales data to console 
     public void exportSalesDataToCSV() {
         System.out.println("SaleID,Date,ProductID,QuantitySold,TotalAmount");
         for (SalesRecord sale : salesList) {
