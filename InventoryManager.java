@@ -106,11 +106,14 @@ class InventoryManager {
 
     // Display all inventory items
     public void displayAllItems() {
-        for (InventoryItem item : inventoryList) {
+        if (inventoryList.isEmpty()) {
+            System.out.println("No items in inventory.");
+        } else {
+            for (InventoryItem item : inventoryList) {
             System.out.println(item.getItemDetails());
+            }
         }
     }
-
     // Get all items
     public ArrayList<InventoryItem> getAllItems() {
         return inventoryList;
