@@ -1,0 +1,31 @@
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+public class Main {
+
+    public static void main(String[] args) {
+        //This will initialize the inventory.
+        Inventory inventory = new Inventory();
+        inventory.addProduct("Premium Paint", 100);  
+        inventory.addProduct("Brush Set", 50);       
+        inventory.addProduct("Roller Covers", 30);   
+
+        //This will create SalesManager along with the inventory.
+        SalesManager salesManager = new SalesManager(inventory);
+        
+        //This will simulate logging sales.
+        salesManager.logSale("Alice Johnson", "John Doe", "Premium Paint", 
+                              LocalDate.of(2024, 11, 25), LocalTime.of(14, 30), 
+                              10, 0.10, 500.0);  // Sale for Premium Paint
+        
+        salesManager.logSale("Bob Smith", "Jane Doe", "Brush Set", 
+                              LocalDate.of(2024, 11, 26), LocalTime.of(15, 45), 
+                              5, 0.05, 100.0);  // Sale for Brush Set
+        
+        //This will print sales records
+        salesManager.printAllSales();
+        
+        //This will print updated inventory after sales
+        salesManager.printInventory();
+    }
+}
