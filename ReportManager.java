@@ -1,4 +1,3 @@
-
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
@@ -21,6 +20,7 @@ class ReportManager {
         content.append("------------------------------------------------\n");
         content.append(String.format("Total Sales: %.2f\n", totalSales));
 
+        // Return a Report object containing both metadata and the report content
         return new Report(type, startDate, endDate, content.toString());
     }
 
@@ -28,6 +28,7 @@ class ReportManager {
     public void listAllReport(Report report) {
         if (report != null) {
             System.out.println(report.getReportDetails());
+            System.out.println(report.getContent());  // Display the content as well
         } else {
             System.out.println("Report not found.");
         }
