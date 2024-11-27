@@ -133,8 +133,8 @@ class SupplierManager {
                     String id = scanner.nextLine();
                     System.out.print("Enter Supplier Name: ");
                     String name = scanner.nextLine();
-                    System.out.print("Enter Supplier Phone: ");
-                    String phone = scanner.nextLine();
+                    System.out.print("Enter Supplier Phone (remaining 7 digits, e.g., 1234567): ");
+                    String phone = "(876)" + scanner.nextLine();
                     System.out.print("Enter Supplier Email: ");
                     String email = scanner.nextLine();
 
@@ -147,8 +147,13 @@ class SupplierManager {
                     // Remove supplier
                     System.out.print("Enter Supplier ID to remove: ");
                     String removeID = scanner.nextLine();
-                    manager.removeSupplier(removeID);
-                    System.out.println("Supplier removed successfully.");
+                    Supplier supplierToRemove = manager.findSupplier(removeID);
+                    if (supplierToRemove == null) {
+                        System.out.println("Error: No supplier found with ID: " + removeID);
+                    } else {
+                        manager.removeSupplier(removeID);
+                        System.out.println("Supplier removed successfully.");
+                    }
                     break;
 
                 case 3:
@@ -162,7 +167,7 @@ class SupplierManager {
                     String searchName = scanner.nextLine();
                     ArrayList<Supplier> results = manager.searchSuppliersByName(searchName);
                     if (results.isEmpty()) {
-                        System.out.println("No suppliers found.");
+                        System.out.println("Error: No suppliers found with name containing: \"" + searchName + "\"");
                     } else {
                         for (Supplier result : results) {
                             System.out.println(result.getSupplierDetails());
@@ -176,7 +181,7 @@ class SupplierManager {
                     String findID = scanner.nextLine();
                     Supplier foundSupplier = manager.findSupplier(findID);
                     if (foundSupplier == null) {
-                        System.out.println("Supplier not found.");
+                        System.out.println("Error: No supplier found with ID: " + findID);
                     } else {
                         System.out.println(foundSupplier.getSupplierDetails());
                     }
@@ -187,37 +192,37 @@ class SupplierManager {
                     manager.writeSuppliersToCSV(filename);
                     break;
 
-                case 7:
+                    case 7:
                     // Update supplier information
                     System.out.print("Enter Supplier ID to update: ");
                     String updateID = scanner.nextLine();
                     Supplier supplierToUpdate = manager.findSupplier(updateID);
-
+                
                     if (supplierToUpdate == null) {
-                        System.out.println("Supplier not found.");
+                        System.out.println("Error: No supplier found with ID: " + updateID);
                     } else {
                         System.out.println("Current Details: ");
                         System.out.println(supplierToUpdate.getSupplierDetails());
-
+                
                         System.out.println("Enter new details (leave blank to keep current values):");
                         System.out.print("Enter new Name: ");
                         String newName = scanner.nextLine();
                         if (!newName.isEmpty()) {
                             supplierToUpdate.setName(newName);
                         }
-
+                
                         System.out.print("Enter new Phone: ");
                         String newPhone = scanner.nextLine();
                         if (!newPhone.isEmpty()) {
-                            supplierToUpdate.setPhoneNumber(newPhone);
+                            supplierToUpdate.setPhoneNumber("(876)" + newPhone);
                         }
-
+                
                         System.out.print("Enter new Email: ");
                         String newEmail = scanner.nextLine();
                         if (!newEmail.isEmpty()) {
                             supplierToUpdate.setEmail(newEmail);
                         }
-
+                
                         System.out.println("Supplier details updated successfully.");
                     }
                     break;
