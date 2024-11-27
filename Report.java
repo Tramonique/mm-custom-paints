@@ -33,7 +33,15 @@ class Report {
 
     // Display report details
     public String getReportDetails() {
-        return String.format("Type: %s\nStart Date: %s\nEnd Date: %s\nContent:\n%s",
-                             type, startDate, endDate, content);
+        StringBuilder content = new StringBuilder();
+        content.append(String.format("Report Type: %s\nStart Date: %s\nEnd Date: %s\n", 
+                                    type, startDate, endDate));
+        
+        content.append("Sales Data:\n");
+        for (SalesRecord sale : salesData) {
+            content.append(sale.toString()).append("\n");
+        }
+
+        return content.toString();
     }
 }
