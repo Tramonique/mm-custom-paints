@@ -26,22 +26,11 @@ class Report {
         return endDate;
     }
 
-    public String getContent() {
-        return content;
-    }
-
+    
 
     // Display report details
-    public String getReportDetails() {
-        StringBuilder content = new StringBuilder();
-        content.append(String.format("Report Type: %s\nStart Date: %s\nEnd Date: %s\n", 
-                                    type, startDate, endDate));
-        
-        content.append("Sales Data:\n");
-        for (SalesRecord sale : salesData) {
-            content.append(sale.toString()).append("\n");
-        }
-
-        return content.toString();
+   public String getReportDetails() {
+        return "Report Type: " + type + "\n" +
+               "Period: " + startDate + " to " + endDate + "\n";
     }
 }
