@@ -4,7 +4,9 @@ import java.util.Scanner;
 
 public class InventoryTextUI {
     public static void main(String[] args) {
+        // Initialize InventoryManager and SalesManager
         InventoryManager inventoryManager = new InventoryManager();
+        SalesManager salesManager = new SalesManager(inventoryManager);  // Pass InventoryManager to SalesManager
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Welcome to the Inventory Management System!");
@@ -17,14 +19,17 @@ public class InventoryTextUI {
             System.out.println("4. Restock Item");
             System.out.println("5. Edit Item");
             System.out.println("6. Delete Item");
-            
-            System.out.println("7. Exit");
+            System.out.println("7. Log a Sale");
+            System.out.println("8. Display All Sales");
+            System.out.println("9. Delete a Sale");
+            System.out.println("10. Exit"); 
 
             int choice = scanner.nextInt();
             scanner.nextLine(); // Consume newline
 
             switch (choice) {
                 case 1 -> {
+                    // Add Item
                     System.out.print("Enter Item Name: ");
                     String name = scanner.nextLine();
 
@@ -85,16 +90,17 @@ public class InventoryTextUI {
                 }
 
                 case 2 -> {
+                    // Display Items
                     if (inventoryManager.getAllItems().isEmpty()) {
-                            System.out.println("No items in the inventory.");
-                        } else {
-                            inventoryManager.displayAllItems();
-                        }
-                        break;
-
+                        System.out.println("No items in the inventory.");
+                    } else {
+                        inventoryManager.displayAllItems();
+                    }
+                    break;
                 }
 
-                case 3 -> { // Display item details
+                case 3 -> {
+                    // Display item details
                     System.out.print("Enter the Item ID to display details: ");
                     String detailItemID = scanner.nextLine();
 
@@ -120,6 +126,7 @@ public class InventoryTextUI {
                 }
 
                 case 4 -> {
+                    // Restock Item
                     System.out.print("Enter Item ID to restock: ");
                     String itemID = scanner.nextLine();
 
@@ -132,10 +139,11 @@ public class InventoryTextUI {
                     } else {
                         System.out.println("Failed to restock item due to insufficient raw materials.");
                     }
+                    break;
                 }
 
                 case 5 -> {
-                    // Edit an item
+                    // Edit Item
                     System.out.print("Enter the Item ID to edit: ");
                     String editItemID = scanner.nextLine();
 
@@ -203,7 +211,7 @@ public class InventoryTextUI {
                 }
 
                 case 6 -> {
-                    // Delete an item
+                    // Delete Item
                     System.out.print("Enter the Item ID to delete: ");
                     String deleteItemID = scanner.nextLine();
 
@@ -213,9 +221,44 @@ public class InventoryTextUI {
                     } else {
                         System.out.println("Item not found or could not be deleted.");
                     }
+                    break;
                 }
 
                 case 7 -> {
+                    // Log a Sale
+                    System.out.print("Enter Product Item ID: ");
+                    String itemID = scanner.nextLine();
+
+                    InventoryItem item = inventoryManager.findItem(itemID);
+
+                    if (item != null) {
+                        System.out.print("Enter Quantity Sold: ");
+                        int quantitySold = scanner.nextInt();
+
+                        System.out.print("Enter Total Sale Amount: ");
+                        double totalAmount = scanner.nextDouble();
+
+                        salesManager.logSale(item.getItemID(), quantitySold, totalAmount);
+                    } else {
+                        System.out.println("Item not found.");
+                    }
+                    break;
+                }
+
+                case 8 -> {
+                    // Display All Sales
+                    salesManager.viewAllSales();
+                    break;
+                }
+                case 9 -> {
+                    // Remove a Sale
+                    System.out.print("Enter Sale ID to delete: ");
+                    String saleID = scanner.nextLine();
+                    salesManager.removeSale(saleID);
+                    break;
+                }
+
+                case 10 -> {
                     System.out.println("Exiting. Goodbye!");
                     scanner.close();
                     return;
