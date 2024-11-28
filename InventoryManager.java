@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-class InventoryManager {
+public class InventoryManager {
     private ArrayList<InventoryItem> inventoryList;  // List of inventory items
     private static final String FILE_NAME = "inventory.txt"; // File to save inventory
 
@@ -57,6 +57,13 @@ class InventoryManager {
 
     // Restock an existing item
     public boolean restockItem(String itemID, double additionalQuantity) {
+
+        // Check if the quantity to add is greater than 0
+        if (additionalQuantity <= 0) {
+            System.out.println("Invalid quantity. Restock quantity must be greater than 0.");
+            return false;
+        }
+
         InventoryItem item = findItem(itemID);
         if (item == null) {
             System.out.println("Item not found.");
@@ -114,12 +121,13 @@ class InventoryManager {
             }
         }
     }
+    
     // Get all items
     public ArrayList<InventoryItem> getAllItems() {
         return inventoryList;
     }
 
-    //Remove inventory item
+    // Remove inventory item
     public boolean removeItem(String itemID) {
         InventoryItem itemToRemove = findItem(itemID);
         if (itemToRemove != null) {
@@ -148,7 +156,7 @@ class InventoryManager {
         }
     }
 
-    // Load inventory from a file0.
+    // Load inventory from a file
     private void loadInventoryFromFile() {
         File file = new File(FILE_NAME);
         if (!file.exists()) {
@@ -183,10 +191,8 @@ class InventoryManager {
                     inventoryList.add(item);
                 }
             }
-            System.out.println("Inventory loaded from file.");
         } catch (IOException e) {
             System.err.println("Error loading inventory: " + e.getMessage());
         }
     }
-      
 }
