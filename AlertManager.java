@@ -1,9 +1,12 @@
 import java.io.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 class AlertManager {
     private ArrayList<StockAlert> alertList;  // List of stock alerts
     private static final String FILE_NAME = "low_inventory_alerts.txt"; // File to store low inventory alerts
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"); // Date-time format
 
     // Constructor
     public AlertManager() {
@@ -55,6 +58,10 @@ class AlertManager {
     // Method to create a file entry when an item is low on inventory
     private void createLowInventoryFile(InventoryItem item) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME, true))) {
+            // Get the current date and time
+            String currentTime = LocalDateTime.now().format(DATE_FORMATTER);
+
+            // Write details to the file
             writer.write("Low Inventory Alert for Item: " + item.getName());
             writer.newLine();
             writer.write("Item ID: " + item.getItemID());
@@ -62,6 +69,8 @@ class AlertManager {
             writer.write("Quantity: " + item.getQuantity());
             writer.newLine();
             writer.write("Threshold: " + item.getThreshold());
+            writer.newLine();
+            writer.write("Alert Created At: " + currentTime); // Add the time
             writer.newLine();
             writer.write("--------------------");
             writer.newLine();
