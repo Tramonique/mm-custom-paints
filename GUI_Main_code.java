@@ -1,10 +1,22 @@
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class Main {
     private JFrame mainFrame;
+    private SupplierManager supplierManager; // Instance of SupplierManager
+    private SalesManager salesManager; // Instance of SalesManager
+
+    public Main() {
+        // Initialize SupplierManager
+        supplierManager = new SupplierManager();
+
+        // Initialize SalesManager
+        InventoryManager inventoryManager = new InventoryManager(); // Assuming InventoryManager is already implemented
+        salesManager = new SalesManager(inventoryManager); // Pass InventoryManager to SalesManager
+    }
 
     public void launch() {
         // Label for the image and text
@@ -55,10 +67,10 @@ public class Main {
         });
 
         // Action listener for menu items
-        item1.addActionListener(e -> JOptionPane.showMessageDialog(null, "Opening Inventory Management..."));
+        item1.addActionListener(e -> openInventoryManagementSystem()); // Open Inventory Management
         item2.addActionListener(e -> JOptionPane.showMessageDialog(null, "Displaying Alerts..."));
-        item3.addActionListener(e -> JOptionPane.showMessageDialog(null, "Opening Supplier Management..."));
-        item4.addActionListener(e -> JOptionPane.showMessageDialog(null, "Opening Sales Logging..."));
+        item3.addActionListener(e -> openSupplierManagementSystem()); // Open Supplier Management
+        item4.addActionListener(e -> openSalesLoggingWindow()); // Open Sales Logging
         item5.addActionListener(e -> JOptionPane.showMessageDialog(null, "Generating Reports..."));
 
         // Panel to center hamburger button in the frame
@@ -101,8 +113,125 @@ public class Main {
         mainFrame.setVisible(true);
     }
 
+    private Object openSalesLoggingWindow() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'openSalesLoggingWindow'");
+    }
+
+    // Method to open the inventory management system in a new window
+    void openInventoryManagementSystem() {
+        // Open the Inventory GUI
+        new InventoryGUI(); // This will instantiate and display the Inventory GUI
+    }
+
+    // Method to open the supplier management system in a new window
+    private void openSupplierManagementSystem() {
+        // Create a new frame for the Supplier Management System
+        JFrame supplierFrame = new JFrame("Supplier Management");
+        supplierFrame.setSize(600, 400);
+        supplierFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        // Example suppliers to add
+        supplierManager.addSupplier(new Supplier("S001", "Supplier A", "123-456-7890", "supplierA@example.com"));
+        supplierManager.addSupplier(new Supplier("S002", "Supplier B", "987-654-3210", "supplierB@example.com"));
+
+        // Get the supplier data as a table
+        Object[][] supplierData = supplierManager.getSuppliersAsTable();
+        String[] columns = { "Supplier ID", "Name", "Phone", "Email" };
+
+        // Create a JTable with a DefaultTableModel
+        DefaultTableModel tableModel = new DefaultTableModel(supplierData, columns);
+        JTable supplierTable = new JTable(tableModel);
+
+        // Set the background color for the supplier table
+        supplierTable.setBackground(Color.decode("#EEACAC"));
+        supplierTable.setForeground(Color.BLACK);
+
+        // Create a JScrollPane and set its background color
+        JScrollPane scrollPane = new JScrollPane(supplierTable);
+        scrollPane.setBackground(Color.decode("#EEACAC"));
+        supplierTable.setGridColor(Color.BLACK); // Set grid color for visibility (optional)
+
+        // Create buttons for adding and removing suppliers
+        JButton addSupplierButton = new JButton("Add Supplier");
+        JButton removeSupplierButton = new JButton("Remove Supplier");
+
+        addSupplierButton.addActionListener(e -> openAddSupplierDialog(tableModel));
+        removeSupplierButton.addActionListener(e -> openRemoveSupplierDialog(tableModel));
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(addSupplierButton);
+        buttonPanel.add(removeSupplierButton);
+
+        supplierFrame.add(buttonPanel, BorderLayout.NORTH);
+        supplierFrame.add(scrollPane, BorderLayout.CENTER);
+
+        // Set background color for the frame itself
+        supplierFrame.getContentPane().setBackground(Color.decode("#EEACAC"));
+
+        supplierFrame.setVisible(true);
+    }
+
+    // Method to open the Add Supplier Dialog
+    private void openAddSupplierDialog(DefaultTableModel tableModel) {
+        JTextField idField = new JTextField(10);
+        JTextField nameField = new JTextField(10);
+        JTextField phoneField = new JTextField(10);
+        JTextField emailField = new JTextField(10);
+
+        JPanel panel = new JPanel(new GridLayout(5, 2));
+        panel.add(new JLabel("Supplier ID:"));
+        panel.add(idField);
+        panel.add(new JLabel("Name:"));
+        panel.add(nameField);
+        panel.add(new JLabel("Phone:"));
+        panel.add(phoneField);
+        panel.add(new JLabel("Email:"));
+        panel.add(emailField);
+
+        int option = JOptionPane.showConfirmDialog(null, panel, "Add Supplier", JOptionPane.OK_CANCEL_OPTION);
+        if (option == JOptionPane.OK_OPTION) {
+            String supplierID = idField.getText();
+            String name = nameField.getText();
+            String phone = phoneField.getText();
+            String email = emailField.getText();
+
+            // Add new supplier to the SupplierManager
+            Supplier supplier = new Supplier(supplierID, name, phone, email);
+            supplierManager.addSupplier(supplier);
+
+            // Refresh the table with the updated supplier data
+            Object[][] updatedData = supplierManager.getSuppliersAsTable();
+            // Clear existing rows
+            tableModel.setRowCount(0);
+            // Add the new rows from the updated data
+            for (Object[] row : updatedData) {
+                tableModel.addRow(row);
+            }
+        }
+    }
+
+    // Method to open the Remove Supplier Dialog
+    private void openRemoveSupplierDialog(DefaultTableModel tableModel) {
+        String supplierID = JOptionPane.showInputDialog("Enter Supplier ID to Remove:");
+        if (supplierID != null) {
+            supplierManager.removeSupplier(supplierID);
+
+            // Refresh the table after removing the supplier
+            Object[][] updatedData = supplierManager.getSuppliersAsTable();
+            // Clear existing rows
+            tableModel.setRowCount(0);
+            // Add the new rows from the updated data
+            for (Object[] row : updatedData) {
+                tableModel.addRow(row);
+            }
+        }
+    }
+
+    // Main method to run the program
     public static void main(String[] args) {
-        Main main = new Main();
-        main.launch();
+        Main mainApp = new Main();
+        mainApp.launch();
     }
 }
+
