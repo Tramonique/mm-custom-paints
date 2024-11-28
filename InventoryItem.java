@@ -1,7 +1,7 @@
 import java.io.Serializable;
 import java.util.Map;
 
-class InventoryItem implements Serializable {
+public class InventoryItem implements Serializable {
     private String itemID;       // Unique identifier for the item
     private String name;         // Name of the item
     private double quantity;     // Current quantity in stock (supports fractional values)
@@ -80,6 +80,21 @@ class InventoryItem implements Serializable {
     // Deduct sub-units and convert to bulk units
     public void deductSubUnits(double subUnits) {
         this.quantity -= subUnits / splitRatio;
+    }
+
+    // Deduct a specified quantity from the item's quantity
+    public void deductQuantity(double quantitySold) {
+        if (quantitySold <= 0) {
+            System.out.println("Quantity to deduct must be greater than 0.");
+            return;
+        }
+
+        if (quantitySold > this.quantity) {
+            System.out.println("Insufficient quantity to deduct.");
+        } else {
+            this.quantity -= quantitySold; // Deduct the quantity
+            System.out.println("Deducted " + quantitySold + " from " + this.name + ". Remaining quantity: " + this.quantity);
+        }
     }
 
     public String getItemDetails() {
