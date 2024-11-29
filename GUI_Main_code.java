@@ -8,14 +8,17 @@ public class Main {
     private JFrame mainFrame;
     private SupplierManager supplierManager; // Instance of SupplierManager
     private SalesManager salesManager; // Instance of SalesManager
+    private AlertManager alertManager;
+    private InventoryManager inventoryManager;
 
     public Main() {
         // Initialize SupplierManager
         supplierManager = new SupplierManager();
 
         // Initialize SalesManager
-        InventoryManager inventoryManager = new InventoryManager(); // Assuming InventoryManager is already implemented
+        inventoryManager = new InventoryManager(); // Assuming InventoryManager is already implemented
         salesManager = new SalesManager(inventoryManager); // Pass InventoryManager to SalesManager
+        alertManager = new AlertManager();
     }
 
     public void launch() {
@@ -68,7 +71,25 @@ public class Main {
 
         // Action listener for menu items
         item1.addActionListener(e -> openInventoryManagementSystem()); // Open Inventory Management
-        item2.addActionListener(e -> JOptionPane.showMessageDialog(null, "Displaying Alerts..."));
+        item2.addActionListener(e -> {
+            StringBuilder alerts = new StringBuilder("Active Alerts:\n\n");
+            alertManager.monitorInventory(inventoryManager);
+            alertManager.displayActiveAlerts();
+        
+            for (StockAlert alert : alertManager.getActiveAlertsList()) {
+                alerts.append(alert.getAlertDetails()).append("\n--------------------\n");
+            }
+        
+            if (alerts.toString().trim().isEmpty()) {
+                alerts.append("No active alerts.");
+            }
+        
+            JTextArea alertTextArea = new JTextArea(alerts.toString());
+            alertTextArea.setEditable(false);
+            JScrollPane scrollPane = new JScrollPane(alertTextArea);
+        
+            JOptionPane.showMessageDialog(null, scrollPane, "Active Alerts", JOptionPane.INFORMATION_MESSAGE);
+        });
         item3.addActionListener(e -> openSupplierManagementSystem()); // Open Supplier Management
         item4.addActionListener(e -> openSalesLoggingWindow()); // Open Sales Logging
         item5.addActionListener(e -> JOptionPane.showMessageDialog(null, "Generating Reports..."));
@@ -226,12 +247,6 @@ public class Main {
                 tableModel.addRow(row);
             }
         }
-    }
-
-    // Main method to run the program
-    public static void main(String[] args) {
-        Main mainApp = new Main();
-        mainApp.launch();
     }
 }
 
