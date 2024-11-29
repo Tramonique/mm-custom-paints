@@ -32,11 +32,8 @@ public class SalesManager {
         } 
         // If the item is found and quantity is sufficient, log the sale
         else {
-            // Generate a sale ID (simple example using UUID, or use a different approach)
             String saleID = generateSaleID();
-            String date = getCurrentDate();  // Get current date for the sale record
-
-            // Create and log the sale
+            String date = getCurrentDate(); 
             SalesRecord sale = new SalesRecord(saleID, date, item.getItemID(), quantitySold, totalAmount);
             salesList.add(sale);
 
@@ -59,10 +56,7 @@ public class SalesManager {
         SalesRecord saleToRemove = findSaleById(saleID);
         
         if (saleToRemove != null) {
-            // Remove the sale from the list
             salesList.remove(saleToRemove);
-            
-            // Save updated data to file
             saveSalesData();
             System.out.println("Sale with ID " + saleID + " was successfully removed.");
             return true;
@@ -76,10 +70,10 @@ public class SalesManager {
     private SalesRecord findSaleById(String saleID) {
         for (SalesRecord sale : salesList) {
             if (sale.getSaleID().equals(saleID)) {
-                return sale;  // Return the sale if found
+                return sale;
             }
         }
-        return null;  // Return null if no sale is found
+        return null;  
     }
 
     // Generate a new unique Sale ID
@@ -88,16 +82,14 @@ public class SalesManager {
             return "000001";  // Start with 000001 if the sales list is empty
         }
 
-        // Get the last sale's ID from the sales list and increment it
         String lastSaleID = salesList.get(salesList.size() - 1).getSaleID();
         int newSaleID = Integer.parseInt(lastSaleID) + 1;
 
-        // Ensure it's always 6 digits (pad with leading zeros if necessary)
         return String.format("%06d", newSaleID);
     }
     // Get current date in YYYY-MM-DD format
     private String getCurrentDate() {
-        return java.time.LocalDate.now().toString();  // Using LocalDate to get today's date
+        return java.time.LocalDate.now().toString();
     }
 
     // Search for an item by Item ID
@@ -116,7 +108,6 @@ public class SalesManager {
             }
         }
         
-        // Proceed with loading sales data
         try (BufferedReader br = new BufferedReader(new FileReader(SALES_FILE))) {
             String line;
             while ((line = br.readLine()) != null) {
