@@ -72,6 +72,10 @@ public class InventoryItem implements Serializable {
         this.splitRatio = splitRatio;
     }
 
+    public boolean isLowStock() {
+        return this.quantity < this.threshold;
+    }
+
     // Calculate available sub-units based on split ratio
     public double getAvailableSubUnits() {
         return quantity * splitRatio;
