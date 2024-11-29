@@ -9,11 +9,11 @@ public class ReportManager {
 
     // Generate and export a sales report dynamically based on the sales data and date range
     public void generateAndExportSalesReportByDate(String startDate, String endDate, SalesManager salesManager) {
-        List<SalesRecord> salesData = salesManager.getSalesList();  // Access the sales data from SalesManager
+        List<SalesRecord> salesData = salesManager.getSalesList();
         double totalSales = 0;
         StringBuilder content = new StringBuilder("Sales Report:\n");
 
-        content.append("------------------------------------------------\n");
+        content.append("--------------------------\n");
 
         // Filter and append sales records within the specified date range
         for (SalesRecord sale : salesData) {
@@ -24,10 +24,9 @@ public class ReportManager {
             }
         }
 
-        content.append("------------------------------------------------\n");
+        content.append("-------------------------\n");
         content.append(String.format("Total Sales for Period %s to %s: %.2f\n", startDate, endDate, totalSales));
 
-        // Export report to CSV
         exportReportToCSV(startDate, endDate, content.toString());
     }
 
@@ -37,7 +36,7 @@ public class ReportManager {
         double totalSales = 0;
         StringBuilder content = new StringBuilder("Sales Report:\n");
 
-        content.append("------------------------------------------------\n");
+        content.append("------------------------\n");
 
         // Filter and append sales records for the given product ID within the date range
         for (SalesRecord sale : salesData) {
@@ -49,10 +48,9 @@ public class ReportManager {
             }
         }
 
-        content.append("------------------------------------------------\n");
+        content.append("--------------------------\n");
         content.append(String.format("Total Sales for Product %s in Period %s to %s: %.2f\n", itemID, startDate, endDate, totalSales));
 
-        // Export report to CSV
         exportReportToCSV(startDate, endDate, content.toString());
     }
 
@@ -69,7 +67,6 @@ public class ReportManager {
             downloadsPath = userHome + "/Downloads/";
         }
 
-        // Ensure the directory exists
         File downloadDir = new File(downloadsPath);
         if (!downloadDir.exists()) {
             downloadDir.mkdirs();  // Create the directory if it doesn't exist
@@ -84,14 +81,12 @@ public class ReportManager {
 
         // Write the content to the CSV file in the Downloads folder
         try (FileWriter writer = new FileWriter(filePath)) {
-            // Write the report header with date range
             writer.append("Report for Sales from " + startDate + " to " + endDate + "\n");
             writer.append("Sale Date,Sale ID,Product ID,Quantity,Amount\n");
 
-            // Split content by newlines and write each sale record as a new row
             String[] lines = content.split("\n");
             for (String line : lines) {
-                if (line.contains("Sale Date:")) {  // Only include lines with sales data
+                if (line.contains("Sale Date:")) { 
                 
                     String saleDate = line.split("Sale Date:")[1].split("\t")[0].trim();
                     String saleID = line.split("Sale ID:")[1].split("\t")[0].trim();
