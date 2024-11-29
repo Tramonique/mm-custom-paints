@@ -1,7 +1,6 @@
-import java.io.Serializable;
 import java.util.Map;
 
-public class InventoryItem implements Serializable {
+public class InventoryItem {
     private String itemID;       // Unique identifier for the item
     private String name;         // Name of the item
     private double quantity;     // Current quantity in stock (supports fractional values)
@@ -70,10 +69,6 @@ public class InventoryItem implements Serializable {
 
     public void setSplitRatio(int splitRatio) {
         this.splitRatio = splitRatio;
-    }
-
-    public boolean isLowStock() {
-        return this.quantity < this.threshold;
     }
 
     // Calculate available sub-units based on split ratio

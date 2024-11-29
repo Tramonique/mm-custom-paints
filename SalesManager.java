@@ -13,6 +13,10 @@ public class SalesManager {
         loadSalesData();  // Load existing sales data from file
     }
 
+    public List<SalesRecord> getSalesList() {
+        return salesList;  // Return the list of sales records
+    }
+
     // Add a sales record
     public void logSale(String itemID, int quantitySold, double totalAmount) {
         // Search for the item by ID
