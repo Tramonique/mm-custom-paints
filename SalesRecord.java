@@ -35,7 +35,7 @@ public class SalesRecord {
         return totalAmount;
     }
 
-    // Setters with validation (if updates are allowed)
+    // Setters
     public void setQuantitySold(int quantitySold) {
         if (quantitySold < 0) {
             throw new IllegalArgumentException("Quantity sold cannot be negative.");
@@ -50,7 +50,6 @@ public class SalesRecord {
         this.totalAmount = totalAmount;
     }
 
-    // Override toString() to simplify printing
     @Override
     public String toString() {
         return String.format("Sale ID: %s\nDate: %s\nProduct ID: %s\nQuantity Sold: %d\nTotal Amount: %.2f",
