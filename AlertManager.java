@@ -55,6 +55,43 @@ class AlertManager {
         }
     }
 
+    public ArrayList<StockAlert> getActiveAlertsList() {
+        ArrayList<StockAlert> activeAlerts = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
+            String line;
+            String alertID = null;
+            String itemName = null;
+            String itemID = null;
+            int quantity = 0;
+            int threshold = 0;
+            boolean readingAlert = false;
+
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith("Low Inventory Alert for Item:")) {
+                    itemName = line.substring(line.indexOf(":") + 2);
+                    readingAlert = true;
+                } else if (line.startsWith("Item ID:")) {
+                    itemID = line.substring(line.indexOf(":") + 2);
+                } else if (line.startsWith("Quantity:")) {
+                    quantity = Integer.parseInt(line.substring(line.indexOf(":") + 2));
+                } else if (line.startsWith("Threshold:")) {
+                    threshold = Integer.parseInt(line.substring(line.indexOf(":") + 2));
+                } else if (line.startsWith("Alert Created At:")) {
+                    // Complete the reading of one alert
+                    if (readingAlert && itemName != null && itemID != null) {
+                        InventoryItem item = new InventoryItem(itemID, itemName, quantity, threshold);
+                        StockAlert alert = new StockAlert("ALERT-" + itemID, item);
+                        activeAlerts.add(alert);
+                    }
+                    readingAlert = false; // Reset for the next alert
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading from file: " + e.getMessage());
+        }
+        return activeAlerts;
+    }
+
     // Method to create a file entry when an item is low on inventory
     private void createLowInventoryFile(InventoryItem item) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME, true))) {
