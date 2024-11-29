@@ -1,15 +1,15 @@
 public class SalesRecord {
     private final String saleID;        // Unique identifier for the sale
     private final String date;          // Date of the sale (format: YYYY-MM-DD)
-    private final String productID;     // ID of the product sold
+    private final String itemID;     // ID of the product sold
     private int quantitySold;           // Quantity of the product sold
     private double totalAmount;         // Total amount of the sale
 
     // Constructor
-    public SalesRecord(String saleID, String date, String productID, int quantitySold, double totalAmount) {
+    public SalesRecord(String saleID, String date, String itemID, int quantitySold, double totalAmount) {
         this.saleID = saleID;
         this.date = date;
-        this.productID = productID;
+        this.itemID = itemID;
         setQuantitySold(quantitySold);  // Using setter for validation
         setTotalAmount(totalAmount);    // Using setter for validation
     }
@@ -24,7 +24,7 @@ public class SalesRecord {
     }
 
     public String getProductID() {
-        return productID;
+        return itemID;
     }
 
     public int getQuantitySold() {
@@ -35,7 +35,7 @@ public class SalesRecord {
         return totalAmount;
     }
 
-    // Setters
+    // Setters with validation (if updates are allowed)
     public void setQuantitySold(int quantitySold) {
         if (quantitySold < 0) {
             throw new IllegalArgumentException("Quantity sold cannot be negative.");
@@ -50,9 +50,10 @@ public class SalesRecord {
         this.totalAmount = totalAmount;
     }
 
+    // Override toString() to simplify printing
     @Override
     public String toString() {
         return String.format("Sale ID: %s\nDate: %s\nProduct ID: %s\nQuantity Sold: %d\nTotal Amount: %.2f",
-                             saleID, date, productID, quantitySold, totalAmount);
+                             saleID, date, itemID, quantitySold, totalAmount);
     }
 }
