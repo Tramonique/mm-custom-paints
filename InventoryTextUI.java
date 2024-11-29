@@ -28,7 +28,7 @@ public class InventoryTextUI {
             System.out.println("12. Exit");
 
             int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
+            scanner.nextLine(); 
 
             switch (choice) {
                 case 1 -> {
@@ -44,7 +44,7 @@ public class InventoryTextUI {
 
                     System.out.print("Enter Initial Quantity: ");
                     double quantity = scanner.nextDouble();
-                    scanner.nextLine(); // Consume newline
+                    scanner.nextLine(); 
 
                     System.out.print("Does this item require splitting into sub-units? (yes/no): ");
                     String hasSplitRatio = scanner.nextLine();
@@ -53,7 +53,7 @@ public class InventoryTextUI {
                     if (hasSplitRatio.equalsIgnoreCase("yes")) {
                         System.out.print("Enter the number of sub-units per bulk unit: ");
                         splitRatio = scanner.nextInt();
-                        scanner.nextLine(); // Consume newline
+                        scanner.nextLine(); 
                     }
 
                     System.out.print("Does this item have a formula? (yes/no): ");
@@ -77,7 +77,7 @@ public class InventoryTextUI {
 
                             System.out.print("Enter quantity required in sub-units (available: " + rawMaterial.getAvailableSubUnits() + "): ");
                             double requiredSubUnits = scanner.nextDouble();
-                            scanner.nextLine(); // Consume newline
+                            scanner.nextLine(); 
 
                             formula.put(rawMaterialID, requiredSubUnits);
                         }
@@ -198,7 +198,7 @@ public class InventoryTextUI {
 
                                 System.out.print("Enter quantity required in sub-units (available: " + rawMaterial.getAvailableSubUnits() + "): ");
                                 double requiredSubUnits = scanner.nextDouble();
-                                scanner.nextLine(); // Consume newline
+                                scanner.nextLine(); 
 
                                 newFormula.put(rawMaterialID, requiredSubUnits);
                             }
