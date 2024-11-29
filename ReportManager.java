@@ -92,14 +92,13 @@ public class ReportManager {
             String[] lines = content.split("\n");
             for (String line : lines) {
                 if (line.contains("Sale Date:")) {  // Only include lines with sales data
-                    // Extract the data from each line and format it for CSV
+                
                     String saleDate = line.split("Sale Date:")[1].split("\t")[0].trim();
                     String saleID = line.split("Sale ID:")[1].split("\t")[0].trim();
                     String productID = line.split("Product ID:")[1].split("\t")[0].trim();
                     String quantity = line.split("Quantity:")[1].split("\t")[0].trim();
                     String amount = line.split("Amount:")[1].trim();
 
-                    // Write the sale data as a row in the CSV
                     writer.append(String.format("%s,%s,%s,%s,%s\n", saleDate, saleID, productID, quantity, amount));
                 }
             }
