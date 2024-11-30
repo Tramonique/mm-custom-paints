@@ -1,17 +1,17 @@
 public class SalesRecord {
-    private final String saleID;        // Unique identifier for the sale
-    private final String date;          // Date of the sale (format: YYYY-MM-DD)
-    private final String itemID;     // ID of the product sold
-    private int quantitySold;           // Quantity of the product sold
-    private double totalAmount;         // Total amount of the sale
+    private final String saleID; // Unique identifier for the sale
+    private final String date; // Date of the sale (format: YYYY-MM-DD)
+    private final String productID; // ID of the product sold
+    private int quantitySold; // Quantity of the product sold
+    private double totalAmount; // Total amount of the sale
 
     // Constructor
-    public SalesRecord(String saleID, String date, String itemID, int quantitySold, double totalAmount) {
+    public SalesRecord(String saleID, String date, String productID, int quantitySold, double totalAmount) {
         this.saleID = saleID;
         this.date = date;
-        this.itemID = itemID;
-        setQuantitySold(quantitySold);  // Using setter for validation
-        setTotalAmount(totalAmount);    // Using setter for validation
+        this.productID = productID;
+        setQuantitySold(quantitySold); // Using setter for validation
+        setTotalAmount(totalAmount); // Using setter for validation
     }
 
     // Getters
@@ -24,7 +24,7 @@ public class SalesRecord {
     }
 
     public String getProductID() {
-        return itemID;
+        return productID;
     }
 
     public int getQuantitySold() {
@@ -53,6 +53,6 @@ public class SalesRecord {
     @Override
     public String toString() {
         return String.format("Sale ID: %s\nDate: %s\nProduct ID: %s\nQuantity Sold: %d\nTotal Amount: %.2f",
-                             saleID, date, itemID, quantitySold, totalAmount);
+                saleID, date, productID, quantitySold, totalAmount);
     }
 }

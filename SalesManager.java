@@ -1,44 +1,52 @@
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JOptionPane;
 
 public class SalesManager {
-    private List<SalesRecord> salesList;  // List of sales records
-    private InventoryManager inventoryManager;  
-    private static final String SALES_FILE = "sales_data.txt";  // File to store sales data
+    private List<SalesRecord> salesList; // List of sales records
+    private InventoryManager inventoryManager;
+    private static final String SALES_FILE = "sales_data.txt"; // File to store sales data
 
     // Constructor
     public SalesManager(InventoryManager inventoryManager) {
         this.salesList = new ArrayList<>();
-        this.inventoryManager = inventoryManager;  // Initialize inventory manager
-        loadSalesData();  // Load existing sales data from file
+        this.inventoryManager = inventoryManager;
+        loadSalesData(); // Load existing sales data from file
     }
 
-    public List<SalesRecord> getSalesList() {
-        return salesList;  // Return the list of sales records
-    }
-
-    // Add a sales record
+    // Add a sales record (log sale)
     public void logSale(String itemID, int quantitySold, double totalAmount) {
         // Search for the item by ID
         InventoryItem item = inventoryManager.findItem(itemID);
 
         // Check if the item was found
         if (item == null) {
-            System.out.println("Error: Item with ID " + itemID + " not found.");
-        } 
+            JOptionPane.showMessageDialog(null, "Error: Item with ID " + itemID + " not found.");
+        }
         // Check if the quantity is sufficient
         else if (item.getQuantity() < quantitySold) {
-            System.out.println("Error: Insufficient quantity of item " + itemID + ". Available stock: " + item.getQuantity());
-        } 
+            JOptionPane.showMessageDialog(null,
+                    "Error: Insufficient quantity of item " + itemID + ". Available stock: " + item.getQuantity());
+        }
         // If the item is found and quantity is sufficient, log the sale
         else {
+            // Generate a sale ID (simple example using UUID, or use a different approach)
             String saleID = generateSaleID();
-            String date = getCurrentDate(); 
+            String date = getCurrentDate(); // Get current date for the sale record
+
+            // Create and log the sale
             SalesRecord sale = new SalesRecord(saleID, date, item.getItemID(), quantitySold, totalAmount);
             salesList.add(sale);
 
             // Update the inventory by deducting the sold quantity
-            item.deductQuantity(quantitySold);
+            item.setQuantity(item.getQuantity() - quantitySold); // Deduct sold quantity
 
             // Save the updated inventory
             inventoryManager.saveInventoryToFile();
@@ -46,7 +54,7 @@ public class SalesManager {
             // Append the sale to the file
             appendSaleToFile(sale);
 
-            System.out.println("Sale logged successfully for item: " + itemID);
+            JOptionPane.showMessageDialog(null, "Sale logged successfully for item: " + itemID);
         }
     }
 
@@ -54,14 +62,17 @@ public class SalesManager {
     public boolean removeSale(String saleID) {
         // Find the sale by its ID
         SalesRecord saleToRemove = findSaleById(saleID);
-        
+
         if (saleToRemove != null) {
+            // Remove the sale from the list
             salesList.remove(saleToRemove);
+
+            // Save updated data to file
             saveSalesData();
-            System.out.println("Sale with ID " + saleID + " was successfully removed.");
+            JOptionPane.showMessageDialog(null, "Sale with ID " + saleID + " was successfully removed.");
             return true;
         } else {
-            System.out.println("Error: Sale with ID " + saleID + " not found.");
+            JOptionPane.showMessageDialog(null, "Error: Sale with ID " + saleID + " not found.");
             return false;
         }
     }
@@ -70,31 +81,29 @@ public class SalesManager {
     private SalesRecord findSaleById(String saleID) {
         for (SalesRecord sale : salesList) {
             if (sale.getSaleID().equals(saleID)) {
-                return sale;
+                return sale; // Return the sale if found
             }
         }
-        return null;  
+        return null; // Return null if no sale is found
     }
 
     // Generate a new unique Sale ID
     public String generateSaleID() {
         if (salesList.isEmpty()) {
-            return "000001";  // Start with 000001 if the sales list is empty
+            return "000001"; // Start with 000001 if the sales list is empty
         }
 
+        // Get the last sale's ID from the sales list and increment it
         String lastSaleID = salesList.get(salesList.size() - 1).getSaleID();
         int newSaleID = Integer.parseInt(lastSaleID) + 1;
 
+        // Ensure it's always 6 digits (pad with leading zeros if necessary)
         return String.format("%06d", newSaleID);
     }
+
     // Get current date in YYYY-MM-DD format
     private String getCurrentDate() {
-        return java.time.LocalDate.now().toString();
-    }
-
-    // Search for an item by Item ID
-    public InventoryItem searchItemByID(String itemID) {
-        return inventoryManager.findItem(itemID);  
+        return java.time.LocalDate.now().toString(); // Using LocalDate to get today's date
     }
 
     // Load sales data from file
@@ -102,12 +111,13 @@ public class SalesManager {
         File salesFile = new File(SALES_FILE);
         if (!salesFile.exists()) {
             try {
-                salesFile.createNewFile();  // Create the file if it doesn't exist
+                salesFile.createNewFile(); // Create the file if it doesn't exist
             } catch (IOException e) {
-                System.out.println("Error creating sales file: " + e.getMessage());
+                JOptionPane.showMessageDialog(null, "Error creating sales file: " + e.getMessage());
             }
         }
-        
+
+        // Proceed with loading sales data
         try (BufferedReader br = new BufferedReader(new FileReader(SALES_FILE))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -124,7 +134,7 @@ public class SalesManager {
                 }
             }
         } catch (IOException e) {
-            System.out.println("Error loading sales data: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Error loading sales data: " + e.getMessage());
         }
     }
 
@@ -133,11 +143,11 @@ public class SalesManager {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(SALES_FILE))) {
             for (SalesRecord sale : salesList) {
                 bw.write(sale.getSaleID() + "," + sale.getDate() + "," + sale.getProductID() + "," +
-                         sale.getQuantitySold() + "," + sale.getTotalAmount());
+                        sale.getQuantitySold() + "," + sale.getTotalAmount());
                 bw.newLine();
             }
         } catch (IOException e) {
-            System.out.println("Error saving sales data: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Error saving sales data: " + e.getMessage());
         }
     }
 
@@ -145,24 +155,41 @@ public class SalesManager {
     private void appendSaleToFile(SalesRecord sale) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(SALES_FILE, true))) {
             bw.write(sale.getSaleID() + "," + sale.getDate() + "," + sale.getProductID() + "," +
-                     sale.getQuantitySold() + "," + sale.getTotalAmount());
+                    sale.getQuantitySold() + "," + sale.getTotalAmount());
             bw.newLine();
         } catch (IOException e) {
-            System.out.println("Error appending sale data: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Error appending sale data: " + e.getMessage());
         }
     }
 
-
+    // Get sales data as a 2D Object array for JTable display
+    public Object[][] getSalesAsTable() {
+        Object[][] tableData = new Object[salesList.size()][5];
+        for (int i = 0; i < salesList.size(); i++) {
+            SalesRecord sale = salesList.get(i);
+            tableData[i][0] = sale.getSaleID();
+            tableData[i][1] = sale.getDate();
+            tableData[i][2] = sale.getProductID();
+            tableData[i][3] = sale.getQuantitySold();
+            tableData[i][4] = sale.getTotalAmount();
+        }
+        return tableData;
+    }
 
     // View all sales records
     public void viewAllSales() {
         if (salesList.isEmpty()) {
-            System.out.println("No sales records found.");
+            JOptionPane.showMessageDialog(null, "No sales records found.");
         } else {
             for (SalesRecord sale : salesList) {
-                System.out.println(sale);  
+                System.out.println(sale);
                 System.out.println("--------------------");
             }
         }
+    }
+
+    // Implement the getSalesData() method to return the sales list
+    public List<SalesRecord> getSalesData() {
+        return salesList; // Return the sales list
     }
 }

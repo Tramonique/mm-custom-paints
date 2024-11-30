@@ -4,10 +4,9 @@ import java.util.Scanner;
 
 public class InventoryTextUI {
     public static void main(String[] args) {
-        // Initialize InventoryManager, SalesManager, and ReportManager
+        // Initialize InventoryManager and SalesManager
         InventoryManager inventoryManager = new InventoryManager();
-        SalesManager salesManager = new SalesManager(inventoryManager);  // Pass InventoryManager to SalesManager
-        ReportManager reportManager = new ReportManager();
+        SalesManager salesManager = new SalesManager(inventoryManager); // Pass InventoryManager to SalesManager
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Welcome to the Inventory Management System!");
@@ -23,12 +22,10 @@ public class InventoryTextUI {
             System.out.println("7. Log a Sale");
             System.out.println("8. Display All Sales");
             System.out.println("9. Delete a Sale");
-            System.out.println("10. Generate and Export Sales Report by Item");
-            System.out.println("11. Generate and Export Sales Report by Date");
-            System.out.println("12. Exit");
+            System.out.println("10. Exit");
 
             int choice = scanner.nextInt();
-            scanner.nextLine(); 
+            scanner.nextLine(); // Consume newline
 
             switch (choice) {
                 case 1 -> {
@@ -44,7 +41,7 @@ public class InventoryTextUI {
 
                     System.out.print("Enter Initial Quantity: ");
                     double quantity = scanner.nextDouble();
-                    scanner.nextLine(); 
+                    scanner.nextLine(); // Consume newline
 
                     System.out.print("Does this item require splitting into sub-units? (yes/no): ");
                     String hasSplitRatio = scanner.nextLine();
@@ -53,7 +50,7 @@ public class InventoryTextUI {
                     if (hasSplitRatio.equalsIgnoreCase("yes")) {
                         System.out.print("Enter the number of sub-units per bulk unit: ");
                         splitRatio = scanner.nextInt();
-                        scanner.nextLine(); 
+                        scanner.nextLine(); // Consume newline
                     }
 
                     System.out.print("Does this item have a formula? (yes/no): ");
@@ -75,9 +72,10 @@ public class InventoryTextUI {
                                 continue;
                             }
 
-                            System.out.print("Enter quantity required in sub-units (available: " + rawMaterial.getAvailableSubUnits() + "): ");
+                            System.out.print("Enter quantity required in sub-units (available: "
+                                    + rawMaterial.getAvailableSubUnits() + "): ");
                             double requiredSubUnits = scanner.nextDouble();
-                            scanner.nextLine(); 
+                            scanner.nextLine(); // Consume newline
 
                             formula.put(rawMaterialID, requiredSubUnits);
                         }
@@ -117,8 +115,8 @@ public class InventoryTextUI {
                         System.out.println("Threshold: " + itemToDisplay.getThreshold());
                         if (itemToDisplay.getFormula() != null) {
                             System.out.println("Formula:");
-                            itemToDisplay.getFormula().forEach((rawMaterialID, quantity) -> 
-                                System.out.println("  - Raw Material ID: " + rawMaterialID + ", Quantity: " + quantity));
+                            itemToDisplay.getFormula().forEach((rawMaterialID, quantity) -> System.out
+                                    .println("  - Raw Material ID: " + rawMaterialID + ", Quantity: " + quantity));
                         } else {
                             System.out.println("Formula: None");
                         }
@@ -173,7 +171,8 @@ public class InventoryTextUI {
                             itemToEdit.setThreshold(Double.parseDouble(newThreshold));
                         }
 
-                        System.out.print("New Split Ratio (current: " + itemToEdit.getSplitRatio() + ", or press Enter to skip): ");
+                        System.out.print("New Split Ratio (current: " + itemToEdit.getSplitRatio()
+                                + ", or press Enter to skip): ");
                         String newSplitRatio = scanner.nextLine();
                         if (!newSplitRatio.isEmpty()) {
                             itemToEdit.setSplitRatio(Integer.parseInt(newSplitRatio));
@@ -196,9 +195,10 @@ public class InventoryTextUI {
                                     continue;
                                 }
 
-                                System.out.print("Enter quantity required in sub-units (available: " + rawMaterial.getAvailableSubUnits() + "): ");
+                                System.out.print("Enter quantity required in sub-units (available: "
+                                        + rawMaterial.getAvailableSubUnits() + "): ");
                                 double requiredSubUnits = scanner.nextDouble();
-                                scanner.nextLine(); 
+                                scanner.nextLine(); // Consume newline
 
                                 newFormula.put(rawMaterialID, requiredSubUnits);
                             }
@@ -253,7 +253,6 @@ public class InventoryTextUI {
                     salesManager.viewAllSales();
                     break;
                 }
-                
                 case 9 -> {
                     // Remove a Sale
                     System.out.print("Enter Sale ID to delete: ");
@@ -263,42 +262,12 @@ public class InventoryTextUI {
                 }
 
                 case 10 -> {
-                    // Generate and Export Sales Report by Product
-                    System.out.print("Enter Product Item ID: ");
-                    String itemID = scanner.nextLine();
-
-                    System.out.print("Enter Start Date (YYYY-MM-DD): ");
-                    String startDate = scanner.nextLine();
-
-                    System.out.print("Enter End Date (YYYY-MM-DD): ");
-                    String endDate = scanner.nextLine();
-
-                    reportManager.generateAndExportSalesReportByProduct(startDate, endDate, salesManager, itemID);
-                    break;
-                }
-
-                case 11 -> {
-                    // Generate and Export Sales Report by Date
-                    System.out.print("Enter Start Date (YYYY-MM-DD): ");
-                    String startDate = scanner.nextLine();
-
-                    System.out.print("Enter End Date (YYYY-MM-DD): ");
-                    String endDate = scanner.nextLine();
-                    
-                    reportManager.generateAndExportSalesReportByDate(startDate, endDate, salesManager);
-                    break;
-                }
-                case 12 -> {
-                    // Exit
-                    System.out.println("Exiting program.");
+                    System.out.println("Exiting. Goodbye!");
                     scanner.close();
-                    System.exit(0);
-                    break;
+                    return;
                 }
 
-                default -> {
-                    System.out.println("Invalid option. Please try again.");
-                }
+                default -> System.out.println("Invalid choice. Try again.");
             }
         }
     }

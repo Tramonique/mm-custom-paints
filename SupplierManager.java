@@ -1,9 +1,7 @@
-import java.io.*;
 import java.util.ArrayList;
-import java.util.Scanner;
 
-class SupplierManager {
-    private ArrayList<Supplier> supplierList;  // List of suppliers
+public class SupplierManager {
+    private ArrayList<Supplier> supplierList; // List of suppliers
 
     // Constructor
     public SupplierManager() {
@@ -27,14 +25,15 @@ class SupplierManager {
                 return supplier;
             }
         }
-        return null;  // Supplier not found
+        return null; // Supplier not found
     }
 
-    // Search suppliers by name (case insensitive)
+    // Search suppliers by name or ID (case insensitive)
     public ArrayList<Supplier> searchSuppliersByName(String name) {
         ArrayList<Supplier> result = new ArrayList<>();
         for (Supplier supplier : supplierList) {
-            if (supplier.getName().toLowerCase().contains(name.toLowerCase())) {
+            if (supplier.getSupplierID().toLowerCase().contains(name.toLowerCase()) ||
+                    supplier.getName().toLowerCase().contains(name.toLowerCase())) {
                 result.add(supplier);
             }
         }
@@ -43,59 +42,70 @@ class SupplierManager {
 
     // Display all suppliers
     public void viewAllSuppliers() {
-        if (supplierList.isEmpty()) {
-            System.out.println("No suppliers to display.");
-            return;
-        }
         for (Supplier supplier : supplierList) {
             System.out.println(supplier.getSupplierDetails());
             System.out.println("--------------------");
         }
     }
 
-    // Write suppliers to a CSV file (overwrite mode)
-    public void writeSuppliersToCSV(String filename) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename, false))) {
-            // Write CSV header
-            writer.write("Supplier ID,Name,Phone,Email\n");
-
-            // Write supplier data
-            for (Supplier supplier : supplierList) {
-                writer.write(String.format("%s,%s,%s,%s\n",
-                        supplier.getSupplierID(),
-                        supplier.getName(),
-                        supplier.getPhoneNumber(),
-                        supplier.getEmail()));
-            }
-
-            System.out.println("Suppliers have been successfully saved to " + filename);
-        } catch (IOException e) {
-            System.out.println("An error occurred while writing to the CSV file.");
-            e.printStackTrace();
+    // This method returns a 2D array with supplier data to be displayed in the GUI
+    public Object[][] getSuppliersAsTable() {
+        Object[][] tableData = new Object[supplierList.size()][4];
+        for (int i = 0; i < supplierList.size(); i++) {
+            Supplier supplier = supplierList.get(i);
+            tableData[i][0] = supplier.getSupplierID();
+            tableData[i][1] = supplier.getName();
+            tableData[i][2] = supplier.getPhoneNumber();
+            tableData[i][3] = supplier.getEmail();
         }
+        return tableData;
     }
 
-    // Load suppliers from a CSV file
-    public void loadSuppliersFromCSV(String filename) {
-        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
-            String line;
-            reader.readLine(); // Skip the header line
+    // Search for suppliers by ID or name and return as a 2D array for display
+    public Object[][] searchSupplier(String searchTerm) {
+        ArrayList<Supplier> matchedSuppliers = new ArrayList<>();
 
-            while ((line = reader.readLine()) != null) {
-                String[] details = line.split(",");
-                String id = details[0];
-                String name = details[1];
-                String phone = details[2];
-                String email = details[3];
-
-                Supplier supplier = new Supplier(id, name, phone, email);
-                supplierList.add(supplier);
+        for (Supplier supplier : supplierList) {
+            // Search by Supplier ID or Name (case insensitive)
+            if (supplier.getSupplierID().toLowerCase().contains(searchTerm.toLowerCase()) ||
+                    supplier.getName().toLowerCase().contains(searchTerm.toLowerCase())) {
+                matchedSuppliers.add(supplier);
             }
-            System.out.println("Suppliers loaded from " + filename);
-        } catch (FileNotFoundException e) {
-            System.out.println("No existing CSV file found. Starting fresh.");
-        } catch (IOException e) {
-            System.out.println("Error reading CSV file.");
-            e.printStackTrace();
         }
+
+        // Convert matched suppliers to 2D object array
+        Object[][] searchResults = new Object[matchedSuppliers.size()][4];
+        for (int i = 0; i < matchedSuppliers.size(); i++) {
+            Supplier supplier = matchedSuppliers.get(i);
+            searchResults[i][0] = supplier.getSupplierID();
+            searchResults[i][1] = supplier.getName();
+            searchResults[i][2] = supplier.getPhoneNumber();
+            searchResults[i][3] = supplier.getEmail();
+        }
+
+        return searchResults; // Return only the matched suppliers
     }
+
+    // Edit a supplier's details
+    public boolean editSupplier(String supplierID, Supplier editedSupplier) {
+        for (int i = 0; i < supplierList.size(); i++) {
+            Supplier existingSupplier = supplierList.get(i);
+            if (existingSupplier.getSupplierID().equals(supplierID)) {
+                // Update supplier details
+                supplierList.set(i, editedSupplier);
+                return true; // Supplier updated successfully
+            }
+        }
+        return false; // Supplier not found
+    }
+
+    // Get a supplier by ID
+    public Supplier getSupplierByID(String supplierID) {
+        for (Supplier supplier : supplierList) {
+            if (supplier.getSupplierID().equals(supplierID)) {
+                return supplier;
+            }
+        }
+        return null; // Supplier not found
+    }
+}

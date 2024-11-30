@@ -1,26 +1,33 @@
-import java.util.Map;
+import java.util.*;
 
 public class InventoryItem {
-    private String itemID;       // Unique identifier for the item
-    private String name;         // Name of the item
-    private double quantity;     // Current quantity in stock (supports fractional values)
-    private double unitCost;     // Cost per unit
-    private double threshold;    // Minimum stock level before triggering alerts
-    private Map<String, Double> formula; // Formula for the item (raw materials and their quantities)
-    private int splitRatio;        // Number of sub-units per bulk unit
+    private String itemID;
+    private String name;
+    private double quantity;
+    private double unitCost;
+    private double threshold;
+    private int splitRatio;
+    private Map<String, Double> formula; // Formula to handle raw material requirements
+    private double subUnits;
 
+    // Constructor for InventoryItem
     public InventoryItem(String itemID, String name, double quantity, double unitCost, double threshold) {
         this.itemID = itemID;
         this.name = name;
         this.quantity = quantity;
         this.unitCost = unitCost;
         this.threshold = threshold;
-        this.splitRatio = 1; // Default: 1 unit = 1 sub-unit
+        this.splitRatio = 1; // Default split ratio if not set
+        this.formula = new HashMap<>(); // Initialize the formula map
     }
 
-    // Getters and setters
+    // Getters and Setters
     public String getItemID() {
         return itemID;
+    }
+
+    public void setItemID(String itemID) {
+        this.itemID = itemID;
     }
 
     public String getName() {
@@ -28,7 +35,7 @@ public class InventoryItem {
     }
 
     public void setName(String name) {
-    this.name = name;
+        this.name = name;
     }
 
     public double getQuantity() {
@@ -44,7 +51,7 @@ public class InventoryItem {
     }
 
     public void setUnitCost(double unitCost) {
-    this.unitCost = unitCost;
+        this.unitCost = unitCost;
     }
 
     public double getThreshold() {
@@ -52,15 +59,15 @@ public class InventoryItem {
     }
 
     public void setThreshold(double threshold) {
-    this.threshold = threshold;
+        this.threshold = threshold;
     }
 
-    public Map<String, Double> getFormula() {
-        return formula;
+    public double getSubUnits() {
+        return subUnits;
     }
 
-    public void setFormula(Map<String, Double> formula) {
-        this.formula = formula;
+    public void setSubUnits(double subUnits) {
+        this.subUnits = subUnits;
     }
 
     public int getSplitRatio() {
@@ -71,38 +78,37 @@ public class InventoryItem {
         this.splitRatio = splitRatio;
     }
 
-    public boolean isLowStock() {
-        return this.quantity < this.threshold;
+    public Map<String, Double> getFormula() {
+        return formula;
     }
 
-    // Calculate available sub-units based on split ratio
+    public void setFormula(Map<String, Double> formula) {
+        this.formula = formula; // Set the formula if it exists
+    }
+
+    public void deductSubUnits(double quantity) {
+        // Logic to deduct sub-units based on the split ratio
+        this.quantity -= quantity / splitRatio; // Adjusted for split ratio
+    }
+
+    // Get the available sub-units
     public double getAvailableSubUnits() {
-        return quantity * splitRatio;
+        return quantity * splitRatio; // Returns quantity adjusted for split ratio
     }
 
-    // Deduct sub-units and convert to bulk units
-    public void deductSubUnits(double subUnits) {
-        this.quantity -= subUnits / splitRatio;
-    }
-
-    // Deduct a specified quantity from the item's quantity
-    public void deductQuantity(double quantitySold) {
-        if (quantitySold <= 0) {
-            System.out.println("Quantity to deduct must be greater than 0.");
-            return;
-        }
-
-        if (quantitySold > this.quantity) {
-            System.out.println("Insufficient quantity to deduct.");
-        } else {
-            this.quantity -= quantitySold; // Deduct the quantity
-            System.out.println("Deducted " + quantitySold + " from " + this.name + ". Remaining quantity: " + this.quantity);
-        }
-    }
-
+    // Get item details as a string
     public String getItemDetails() {
-        String splitRatioInfo = (splitRatio > 1) ? " (1 bulk unit = " + splitRatio + " sub-units)" : "";
-        return String.format("Item ID: %s | Name: %s | Quantity: %.2f%s",
-                            itemID, name, quantity, splitRatioInfo);
+        return String.format("ID: %s, Name: %s, Quantity: %.2f, Cost: %.2f, Threshold: %.2f",
+                itemID, name, quantity, unitCost, threshold);
+    }
+
+    @Override
+    public String toString() {
+        return getItemDetails();
+    }
+
+    public boolean isLowStock() {
+        // TODO Auto-generated method stub
+        return quantity <= threshold;
     }
 }
