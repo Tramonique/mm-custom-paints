@@ -133,7 +133,7 @@ class InventoryManager {
             saveInventoryToFile(); // Save updated inventory
             return true;
         }
-        return false; // Item not found
+        return false; 
     }
 
     // Save inventory to a file
@@ -165,7 +165,6 @@ class InventoryManager {
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                // Split the line by commas
                 String[] parts = line.split(",");
 
                 // Ensure the line has enough elements
@@ -207,23 +206,6 @@ class InventoryManager {
         }
     }
 
-    public boolean isLowStock() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isLowStock'");
-    }
-
-    public String getName() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getName'");
-    }
-
-    /*
-     * public boolean editItem(String itemID, String name, double quantity, double
-     * unitCost, double threshold) {
-     * // TODO Auto-generated method stub
-     * throw new UnsupportedOperationException("Unimplemented method 'editItem'");
-     * }
-     */
 
     public boolean deleteItem(String itemID) {
         InventoryItem itemToRemove = findItem(itemID);
