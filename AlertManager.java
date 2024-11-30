@@ -1,12 +1,10 @@
-import java.io.*;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import javax.swing.*;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
 
 class AlertManager {
-    private ArrayList<StockAlert> alertList;  // List of stock alerts
-    private static final String FILE_NAME = "low_inventory_alerts.txt"; // File to store low inventory alerts
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"); // Date-time format
+    private ArrayList<StockAlert> alertList; // List of stock alerts
 
     // Constructor
     public AlertManager() {
@@ -22,8 +20,6 @@ class AlertManager {
                     // Create a new alert and add it to the list
                     StockAlert newAlert = new StockAlert("ALERT-" + item.getItemID(), item);
                     alertList.add(newAlert);
-                    // Create a file entry for this low inventory item
-                    createLowInventoryFile(item);
                 } else {
                     // Update existing alert
                     existingAlert.updateStatus();
@@ -45,74 +41,22 @@ class AlertManager {
         return null;
     }
 
-    // Display all active alerts
-    public void displayActiveAlerts() {
+    // Method to display active alerts in a table
+    public void displayActiveAlertsInTable(JTable alertTable) {
+        DefaultTableModel tableModel = (DefaultTableModel) alertTable.getModel();
+        tableModel.setRowCount(0); // Clear existing rows
+
         for (StockAlert alert : alertList) {
             if (alert.isActive()) {
-                System.out.println(alert.getAlertDetails());
-                System.out.println("--------------------");
+                Object[] row = {
+                        alert.getAlertID(),
+                        alert.getItem().getName(),
+                        alert.getItem().getQuantity(),
+                        alert.getItem().getThreshold(),
+                        alert.isActive() ? "Active" : "Inactive"
+                };
+                tableModel.addRow(row);
             }
-        }
-    }
-
-    public ArrayList<StockAlert> getActiveAlertsList() {
-        ArrayList<StockAlert> activeAlerts = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
-            String line;
-            String alertID = null;
-            String itemName = null;
-            String itemID = null;
-            int quantity = 0;
-            int threshold = 0;
-            boolean readingAlert = false;
-
-            while ((line = reader.readLine()) != null) {
-                if (line.startsWith("Low Inventory Alert for Item:")) {
-                    itemName = line.substring(line.indexOf(":") + 2);
-                    readingAlert = true;
-                } else if (line.startsWith("Item ID:")) {
-                    itemID = line.substring(line.indexOf(":") + 2);
-                } else if (line.startsWith("Quantity:")) {
-                    quantity = Integer.parseInt(line.substring(line.indexOf(":") + 2));
-                } else if (line.startsWith("Threshold:")) {
-                    threshold = Integer.parseInt(line.substring(line.indexOf(":") + 2));
-                } else if (line.startsWith("Alert Created At:")) {
-                    // Complete the reading of one alert
-                    if (readingAlert && itemName != null && itemID != null) {
-                        InventoryItem item = new InventoryItem(itemID, itemName, quantity, threshold);
-                        StockAlert alert = new StockAlert("ALERT-" + itemID, item);
-                        activeAlerts.add(alert);
-                    }
-                    readingAlert = false; // Reset for the next alert
-                }
-            }
-        } catch (IOException e) {
-            System.err.println("Error reading from file: " + e.getMessage());
-        }
-        return activeAlerts;
-    }
-
-    // Method to create a file entry when an item is low on inventory
-    private void createLowInventoryFile(InventoryItem item) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME, true))) {
-            // Get the current date and time
-            String currentTime = LocalDateTime.now().format(DATE_FORMATTER);
-
-            // Write details to the file
-            writer.write("Low Inventory Alert for Item: " + item.getName());
-            writer.newLine();
-            writer.write("Item ID: " + item.getItemID());
-            writer.newLine();
-            writer.write("Quantity: " + item.getQuantity());
-            writer.newLine();
-            writer.write("Threshold: " + item.getThreshold());
-            writer.newLine();
-            writer.write("Alert Created At: " + currentTime); // Add the time
-            writer.newLine();
-            writer.write("--------------------");
-            writer.newLine();
-        } catch (IOException e) {
-            System.err.println("Error writing to file: " + e.getMessage());
         }
     }
 }

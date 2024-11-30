@@ -1,14 +1,14 @@
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
-public class InventoryManager {
-    private ArrayList<InventoryItem> inventoryList;  // List of inventory items
+class InventoryManager {
+    private ArrayList<InventoryItem> inventoryList; // List of inventory items
     private static final String FILE_NAME = "inventory.txt"; // File to save inventory
+    private Scanner scanner;
 
-    public InventoryManager () {
+    public InventoryManager() {
         this.inventoryList = new ArrayList<>();
+        this.scanner = new Scanner(System.in); // Initialize scanner for user input
         loadInventoryFromFile(); // Load inventory from file at startup
     }
 
@@ -36,34 +36,31 @@ public class InventoryManager {
         return null; // Item not found
     }
 
-    // Add a new item
-    public boolean addItem(String name, double quantity, double unitCost, double threshold, Map<String, Double> formula, int splitRatio) {
-        String itemID = generateNewID(); // Generate new ID for the item
+    // Add a new item with the provided parameters
+    public boolean addItem(String name, double quantity, double unitCost, double threshold, Map<String, Double> formula,
+            int splitRatio) {
+        // Generate new ID and create the item
+        String itemID = generateNewID();
         InventoryItem newItem = new InventoryItem(itemID, name, quantity, unitCost, threshold);
-        newItem.setSplitRatio(splitRatio); // Set the split ratio
+        newItem.setSplitRatio(splitRatio);
 
         // If the item has a formula, verify raw materials and deduct them
         if (formula != null) {
             if (!deductRawMaterials(formula, quantity)) {
-                return false; // Insufficient raw materials
+                System.out.println("Failed to add item due to insufficient raw materials.");
+                return false; // Abort adding the item if raw materials are insufficient
             }
             newItem.setFormula(formula); // Set the formula for the product
         }
 
-        inventoryList.add(newItem);
-        saveInventoryToFile();
-        return true;
+        inventoryList.add(newItem); // Add the new item to the inventory
+        saveInventoryToFile(); // Save the updated inventory to the file
+        System.out.println("Item added successfully with ID: " + itemID);
+        return true; // Return true when item is successfully added
     }
 
     // Restock an existing item
     public boolean restockItem(String itemID, double additionalQuantity) {
-
-        // Check if the quantity to add is greater than 0
-        if (additionalQuantity <= 0) {
-            System.out.println("Invalid quantity. Restock quantity must be greater than 0.");
-            return false;
-        }
-
         InventoryItem item = findItem(itemID);
         if (item == null) {
             System.out.println("Item not found.");
@@ -94,7 +91,8 @@ public class InventoryManager {
 
             InventoryItem rawMaterial = findItem(rawMaterialID);
             if (rawMaterial == null || rawMaterial.getAvailableSubUnits() < requiredSubUnits) {
-                System.out.println("Insufficient raw material: " + (rawMaterial != null ? rawMaterial.getName() : rawMaterialID));
+                System.out.println(
+                        "Insufficient raw material: " + (rawMaterial != null ? rawMaterial.getName() : rawMaterialID));
                 return false;
             }
         }
@@ -117,11 +115,11 @@ public class InventoryManager {
             System.out.println("No items in inventory.");
         } else {
             for (InventoryItem item : inventoryList) {
-            System.out.println(item.getItemDetails());
+                System.out.println(item.getItemDetails());
             }
         }
     }
-    
+
     // Get all items
     public ArrayList<InventoryItem> getAllItems() {
         return inventoryList;
@@ -167,32 +165,73 @@ public class InventoryManager {
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = reader.readLine()) != null) {
+                // Split the line by commas
                 String[] parts = line.split(",");
+
+                // Ensure the line has enough elements
                 if (parts.length >= 5) {
-                    String itemID = parts[0];
-                    String name = parts[1];
-                    double quantity = Double.parseDouble(parts[2]);
-                    double unitCost = Double.parseDouble(parts[3]);
-                    double threshold = Double.parseDouble(parts[4]);
+                    try {
+                        String itemID = parts[0];
+                        String name = parts[1];
+                        double quantity = Double.parseDouble(parts[2]);
+                        double unitCost = Double.parseDouble(parts[3]);
+                        double threshold = Double.parseDouble(parts[4]);
 
-                    InventoryItem item = new InventoryItem(itemID, name, quantity, unitCost, threshold);
+                        // Create an InventoryItem object
+                        InventoryItem item = new InventoryItem(itemID, name, quantity, unitCost, threshold);
 
-                    // Handle formula if present
-                    if (!"null".equals(parts[5]) && parts.length > 5) {
-                        Map<String, Double> formula = new HashMap<>();
-                        String[] formulaParts = parts[5].replace("{", "").replace("}", "").split(";");
-                        for (String entry : formulaParts) {
-                            String[] keyValue = entry.split("=");
-                            formula.put(keyValue[0].trim(), Double.parseDouble(keyValue[1].trim()));
+                        // Handle formula if present
+                        if (parts.length > 5 && !"null".equals(parts[5])) {
+                            Map<String, Double> formula = new HashMap<>();
+                            String[] formulaParts = parts[5].replace("{", "").replace("}", "").split(";");
+                            for (String entry : formulaParts) {
+                                String[] keyValue = entry.split("=");
+                                if (keyValue.length == 2) {
+                                    formula.put(keyValue[0].trim(), Double.parseDouble(keyValue[1].trim()));
+                                }
+                            }
+                            item.setFormula(formula);
                         }
-                        item.setFormula(formula);
-                    }
 
-                    inventoryList.add(item);
+                        inventoryList.add(item);
+                    } catch (NumberFormatException e) {
+                        System.err.println("Error parsing number in line: " + line);
+                    }
+                } else {
+                    System.err.println("Skipping invalid line: " + line);
                 }
             }
+            System.out.println("Inventory loaded from file.");
         } catch (IOException e) {
             System.err.println("Error loading inventory: " + e.getMessage());
         }
+    }
+
+    public boolean isLowStock() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'isLowStock'");
+    }
+
+    public String getName() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getName'");
+    }
+
+    /*
+     * public boolean editItem(String itemID, String name, double quantity, double
+     * unitCost, double threshold) {
+     * // TODO Auto-generated method stub
+     * throw new UnsupportedOperationException("Unimplemented method 'editItem'");
+     * }
+     */
+
+    public boolean deleteItem(String itemID) {
+        InventoryItem itemToRemove = findItem(itemID);
+        if (itemToRemove != null) {
+            inventoryList.remove(itemToRemove);
+            saveInventoryToFile(); // Save updated inventory
+            return true;
+        }
+        return false; // Item not found
     }
 }
